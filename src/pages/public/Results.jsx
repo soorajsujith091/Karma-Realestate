@@ -1,0 +1,276 @@
+import { useContext, useState, useRef, useEffect } from 'react';
+import { AppDataContext } from '../../context/AppDataContext';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+
+function PropertyCard({ p }) {
+  // Generate a mock rating between 4.5 and 5.0 for the UI
+  const rating = (4.5 + Math.random() * 0.5).toFixed(1);
+
+  return (
+    <Link to={`/kannur/${p.type.toLowerCase()}/${p.id}`} className="nq-card">
+      <div className="nq-media">
+        <img src={p.imgs?.[0] || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00'} alt={p.title} />
+        <div className="nq-rating">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#FBBF24" stroke="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span>{rating}</span>
+        </div>
+        <div className="nq-loc-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          {p.loc}, Kannur
+        </div>
+      </div>
+      <div className="nq-body">
+        <div className="nq-top">
+          <h3 className="nq-title">{p.title}</h3>
+          <div className="nq-price"><b>₹{p.price}L</b></div>
+        </div>
+        <div className="nq-meta">
+          {p.beds && (
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"></path></svg>
+              {p.beds} Beds
+            </span>
+          )}
+          <span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v16H4z"/><path d="M4 14h16M14 4v16"/></svg>
+            {p.area || '1200'} sqft
+          </span>
+          <span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12h20M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8M4 12v-4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4M9 6v6M15 6v6"/></svg>
+            2 Bathrooms
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+
+export default function Results() {
+  const { props } = useContext(AppDataContext);
+  const [searchParams] = useSearchParams();
+  
+  const initialPurpose = searchParams.get('purpose') || 'All';
+  const initialLoc = searchParams.get('loc') || '';
+
+  const [filterPurpose, setFilterPurpose] = useState(initialPurpose);
+  const [filterLoc, setFilterLoc] = useState(initialLoc);
+
+  const [filterType, setFilterType] = useState('All');
+  const [filterPrice, setFilterPrice] = useState('All');
+  const [filterBaths, setFilterBaths] = useState('All');
+  const [activeMarker, setActiveMarker] = useState(null);
+  const [sortBy, setSortBy] = useState('Newest');
+
+  const filteredProps = props.filter(p => {
+    const pMatch = filterPurpose === 'All' || p.purpose === filterPurpose;
+    const lMatch = filterLoc === '' || p.loc === filterLoc;
+    const tMatch = filterType === 'All' || p.type === filterType;
+    
+    let priceMatch = true;
+    if (filterPrice === 'Under 50L') priceMatch = p.price < 50;
+    else if (filterPrice === '50L - 100L') priceMatch = p.price >= 50 && p.price <= 100;
+    else if (filterPrice === 'Over 100L') priceMatch = p.price > 100;
+
+    const bMatch = filterBaths === 'All' || (p.beds && parseInt(p.beds) >= parseInt(filterBaths));
+
+    return pMatch && lMatch && tMatch && priceMatch && bMatch;
+  });
+
+  const sortedProps = [...filteredProps].sort((a, b) => {
+    if (sortBy === 'Price: Low to High') return a.price - b.price;
+    if (sortBy === 'Price: High to Low') return b.price - a.price;
+    return 0; // Newest / Default
+  });
+
+  // Mobile Bottom Sheet Logic
+  const [sheetState, setSheetState] = useState(1); // 0: peek, 1: half, 2: full
+  const [dragY, setDragY] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const startY = useRef(0);
+  const currentY = useRef(0);
+
+  const handlePointerDown = (e) => {
+    if (window.innerWidth > 768) return; // Desktop ignore
+    setDragging(true);
+    startY.current = e.clientY;
+    e.target.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!dragging) return;
+    const dy = e.clientY - startY.current;
+    setDragY(dy);
+  };
+
+  const handlePointerUp = (e) => {
+    if (!dragging) return;
+    setDragging(false);
+    
+    // Determine snap state based on drag distance
+    if (dragY > 50 && sheetState > 0) {
+      setSheetState(s => s - 1);
+    } else if (dragY < -50 && sheetState < 2) {
+      setSheetState(s => s + 1);
+    }
+    setDragY(0);
+    e.target.releasePointerCapture(e.pointerId);
+  };
+
+  // Convert state to viewport height percentage (peek: 85vh down, half: 50vh down, full: 0vh down)
+  const getTransform = () => {
+    if (window.innerWidth > 768) return 'none'; // Desktop
+    const baseOffset = sheetState === 0 ? 'calc(100vh - 160px)' : sheetState === 1 ? '50vh' : '120px';
+    return `translateY(calc(${baseOffset} + ${dragging ? dragY : 0}px))`;
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Property Search Results | KARMA Real Estate Kannur</title>
+        <meta name="description" content="Browse verified real estate properties for sale or rent in Kannur." />
+      </Helmet>
+      <section className="results nq-theme">
+      {/* Search Bar matching NestQuest */}
+      <div className="nq-searchbar">
+        <label className="nq-search-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <select value={filterLoc} onChange={e => setFilterLoc(e.target.value)} className="nq-sel">
+            <option value="">Any Location</option>
+            <option value="Kannur City">Kannur City</option>
+            <option value="Thottada">Thottada</option>
+            <option value="Payyambalam">Payyambalam</option>
+            <option value="Talap">Talap</option>
+          </select>
+        </label>
+        
+        <label className="nq-search-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <select value={filterType} onChange={e => setFilterType(e.target.value)} className="nq-sel">
+            <option value="All">Any Property</option>
+            <option value="House">House</option>
+            <option value="Flat">Flat</option>
+            <option value="Land">Land</option>
+            <option value="Commercial">Commercial</option>
+          </select>
+        </label>
+        
+        <label className="nq-search-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <select value={filterPurpose} onChange={e => setFilterPurpose(e.target.value)} className="nq-sel">
+            <option value="All">Buy or Rent</option>
+            <option value="Sale">Buy</option>
+            <option value="Rent">Rent</option>
+          </select>
+        </label>
+        
+        <label className="nq-search-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          <select value={filterPrice} onChange={e => setFilterPrice(e.target.value)} className="nq-sel">
+            <option value="All">Any Price</option>
+            <option value="Under 50L">Under ₹50L</option>
+            <option value="50L - 100L">₹50L - ₹100L</option>
+            <option value="Over 100L">Over ₹100L</option>
+          </select>
+        </label>
+        
+        <label className="nq-search-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12h20M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8M4 12v-4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path></svg>
+          <select value={filterBaths} onChange={e => setFilterBaths(e.target.value)} className="nq-sel">
+            <option value="All">Any Baths</option>
+            <option value="1">1+ Baths</option>
+            <option value="2">2+ Baths</option>
+            <option value="3">3+ Baths</option>
+            <option value="4">4+ Baths</option>
+          </select>
+        </label>
+        <button className="nq-search-btn">Search</button>
+      </div>
+
+      <div className="res-wrap nq-wrap">
+        <div className="res-left nq-left" style={{ 
+          transform: getTransform(),
+          transition: dragging ? 'none' : 'transform 0.3s cubic-bezier(0.2,0.8,0.2,1)'
+        }}>
+          <div className="res-drag-handle" onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp}>
+            <div className="drag-bar"></div>
+          </div>
+          
+          <div className="nq-header">
+            <div className="nq-header-top">
+              <h2>{sortedProps.length} Places in Kannur</h2>
+              <div className="nq-sort" style={{ display: 'flex', alignItems: 'center' }}>
+                Sort by: 
+                <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ border: 'none', background: 'transparent', fontWeight: 'bold', cursor: 'pointer', outline: 'none', marginLeft: '4px', fontSize: '13.5px' }}>
+                  <option value="Newest">Newest</option>
+                  <option value="Price: Low to High">Price: Low to High</option>
+                  <option value="Price: High to Low">Price: High to Low</option>
+                </select>
+              </div>
+            </div>
+            <div className="nq-subfilters">
+              {filterType !== 'All' && <div className="nq-sub-chip" onClick={() => setFilterType('All')}>{filterType} <span className="x-icon">✕</span></div>}
+              {filterPrice !== 'All' && <div className="nq-sub-chip" onClick={() => setFilterPrice('All')}>{filterPrice} <span className="x-icon">✕</span></div>}
+              {filterBaths !== 'All' && <div className="nq-sub-chip" onClick={() => setFilterBaths('All')}>{filterBaths}+ Baths <span className="x-icon">✕</span></div>}
+              {filterLoc !== '' && <div className="nq-sub-chip" onClick={() => setFilterLoc('')}>{filterLoc} <span className="x-icon">✕</span></div>}
+              {filterPurpose !== 'All' && <div className="nq-sub-chip" onClick={() => setFilterPurpose('All')}>{filterPurpose === 'Sale' ? 'Buy' : 'Rent'} <span className="x-icon">✕</span></div>}
+            </div>
+          </div>
+
+          <div className="res-content nq-content">
+            <div className="res-grid nq-grid">
+              {sortedProps.map(p => (
+                <PropertyCard key={p.id} p={p} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="res-map nq-map-container">
+          <APIProvider apiKey="AIzaSyC36wkei0AmiJoLtIwpeVEeeOo4I-st6qQ">
+            <Map
+              defaultZoom={12}
+              defaultCenter={{ lat: 11.8545, lng: 75.3904 }}
+              mapId="DEMO_MAP_ID"
+              disableDefaultUI={true}
+              style={{ width: '100%', height: '100%' }}
+            >
+              {sortedProps.map(p => (
+                p.lat && p.lng && (
+                  <AdvancedMarker 
+                    key={p.id} 
+                    position={{ lat: p.lat, lng: p.lng }}
+                    onMouseEnter={() => setActiveMarker(p.id)}
+                    onMouseLeave={() => setActiveMarker(null)}
+                    onClick={() => setActiveMarker(p.id === activeMarker ? null : p.id)}
+                  >
+                    <div className={`nq-marker ${activeMarker === p.id ? 'active' : ''}`} style={{ position: 'relative', transform: 'translate(0, -10px)' }}>
+                      ₹{p.price}L
+                      <div className="nq-marker-caret"></div>
+                      
+                      {activeMarker === p.id && (
+                        <div className="nq-map-popup">
+                          <img src={p.imgs?.[0]} alt={p.title} />
+                          <div className="nq-mp-info">
+                            <b>{p.title}</b>
+                            <div className="nq-mp-meta">
+                              <span>⭐ {(4.5 + Math.random() * 0.5).toFixed(1)}</span>
+                              <strong>₹{p.price}L</strong>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </AdvancedMarker>
+                )
+              ))}
+            </Map>
+          </APIProvider>
+        </div>
+      </div>
+    </section>
+    </>
+  );
+}
