@@ -83,15 +83,7 @@ function Header() {
   }, [cooldown, attempts]);
 
   useEffect(() => {
-    if (!isHome) { setScrolled(true); return; }
-
-    const onScroll = () => {
-      // Switch to white after scrolling past ~80% of viewport height (hero)
-      setScrolled(window.scrollY > window.innerHeight * 0.8);
-    };
-    onScroll(); // set initial state
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    setScrolled(true); // Always solid header since new hero has a light background
   }, [isHome]);
 
   return (
@@ -287,7 +279,7 @@ function Header() {
   )
 }
 
-function Footer() {
+export function Footer() {
   return (
     <footer className="footer">
       <div className="footer-in">

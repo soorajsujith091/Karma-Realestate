@@ -3,6 +3,7 @@ import { AppDataContext } from '../../context/AppDataContext';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { Footer } from '../../components/public/PublicLayout';
 
 function PropertyCard({ p }) {
   // Generate a mock rating between 4.5 and 5.0 for the UI
@@ -89,11 +90,12 @@ export default function Results() {
   const [sheetState, setSheetState] = useState(1); // 0: peek, 1: half, 2: full
   const [dragY, setDragY] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [mapType, setMapType] = useState('roadmap');
   const startY = useRef(0);
   const currentY = useRef(0);
 
   const handlePointerDown = (e) => {
-    if (window.innerWidth > 768) return; // Desktop ignore
+    if (window.innerWidth > 1024) return; // Desktop ignore
     setDragging(true);
     startY.current = e.clientY;
     e.target.setPointerCapture(e.pointerId);
@@ -119,10 +121,10 @@ export default function Results() {
     e.target.releasePointerCapture(e.pointerId);
   };
 
-  // Convert state to viewport height percentage (peek: 85vh down, half: 50vh down, full: 0vh down)
+  // Convert state to viewport height percentage (peek: 160px visible, half: 50vh, full: 0px)
   const getTransform = () => {
-    if (window.innerWidth > 768) return 'none'; // Desktop
-    const baseOffset = sheetState === 0 ? 'calc(100vh - 160px)' : sheetState === 1 ? '50vh' : '120px';
+    if (window.innerWidth > 1024) return 'none'; // Desktop
+    const baseOffset = sheetState === 0 ? 'calc(100vh - 160px)' : sheetState === 1 ? '50vh' : '0px';
     return `translateY(calc(${baseOffset} + ${dragging ? dragY : 0}px))`;
   };
 
@@ -226,14 +228,41 @@ export default function Results() {
               ))}
             </div>
           </div>
+          <div className="res-mobile-footer">
+            <Footer />
+          </div>
         </div>
 
         <div className="res-map nq-map-container">
+          <div className="nq-map-float-top">
+             <div className="nq-mf-btn-group">
+               <button className={`nq-mf-btn ${mapType === 'roadmap' ? 'active' : ''}`} onClick={() => setMapType('roadmap')}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Map</button>
+               <button className={`nq-mf-btn ${mapType === 'satellite' ? 'active' : ''}`} onClick={() => setMapType('satellite')}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> Satellite</button>
+             </div>
+          </div>
+          
+          <div className="nq-map-legend">
+            <b>Property Price</b>
+            <div className="nq-ml-dots">
+              <span className="dot d1"></span>
+              <span className="dot d2"></span>
+              <span className="dot d3"></span>
+              <span className="dot d4"></span>
+              <span className="dot d5"></span>
+              <span className="dot d6"></span>
+            </div>
+            <div className="nq-ml-labels">
+              <span>₹20 L</span>
+              <span>₹2 Cr+</span>
+            </div>
+          </div>
+
           <APIProvider apiKey="AIzaSyC36wkei0AmiJoLtIwpeVEeeOo4I-st6qQ">
             <Map
               defaultZoom={12}
               defaultCenter={{ lat: 11.8545, lng: 75.3904 }}
               mapId="DEMO_MAP_ID"
+              mapTypeId={mapType}
               disableDefaultUI={true}
               style={{ width: '100%', height: '100%' }}
             >
@@ -246,23 +275,35 @@ export default function Results() {
                     onMouseLeave={() => setActiveMarker(null)}
                     onClick={() => setActiveMarker(p.id === activeMarker ? null : p.id)}
                   >
-                    <div className={`nq-marker ${activeMarker === p.id ? 'active' : ''}`} style={{ position: 'relative', transform: 'translate(0, -10px)' }}>
-                      ₹{p.price}L
-                      <div className="nq-marker-caret"></div>
-                      
-                      {activeMarker === p.id && (
-                        <div className="nq-map-popup">
-                          <img src={p.imgs?.[0]} alt={p.title} />
-                          <div className="nq-mp-info">
-                            <b>{p.title}</b>
-                            <div className="nq-mp-meta">
-                              <span>⭐ {(4.5 + Math.random() * 0.5).toFixed(1)}</span>
-                              <strong>₹{p.price}L</strong>
+                    {activeMarker === p.id ? (
+                      <div className="nq-marker-active-wrap" style={{ position: 'relative', zIndex: 50 }}>
+                        <svg className="nq-red-pin" width="32" height="32" viewBox="0 0 24 24" fill="#ef4444"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" fill="#fff" /></svg>
+                        
+                        <div className="nq-ref-popup">
+                          <div className="nq-ref-wedge"></div>
+                          <div className="nq-ref-card">
+                            <div className="nq-ref-img-wrap">
+                              <img src={p.imgs?.[0] || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00'} alt={p.title} />
+                              <div className="nq-ref-price-tag">₹{p.price} L</div>
+                            </div>
+                            <div className="nq-ref-body">
+                              <div className="nq-ref-title">{p.title}</div>
+                              <div className="nq-ref-loc">{p.loc}, Kannur</div>
+                              <div className="nq-ref-specs">
+                                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"></path></svg> {p.beds || 3} Beds</span>
+                                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12h20M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8M4 12v-4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4M9 6v6M15 6v6"/></svg> {p.baths || 2} Baths</span>
+                                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v16H4z"/><path d="M4 14h16M14 4v16"/></svg> {p.area || 1500} sq.ft</span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="nq-marker" style={{ position: 'relative', transform: 'translate(0, -10px)' }}>
+                        ₹{p.price} L
+                        <div className="nq-marker-caret"></div>
+                      </div>
+                    )}
                   </AdvancedMarker>
                 )
               ))}
