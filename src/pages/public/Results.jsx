@@ -257,7 +257,7 @@ export default function Results() {
             </div>
           </div>
 
-          <APIProvider apiKey="AIzaSyC36wkei0AmiJoLtIwpeVEeeOo4I-st6qQ">
+          <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyC36wkei0AmiJoLtIwpeVEeeOo4I-st6qQ"}>
             <Map
               defaultZoom={12}
               defaultCenter={{ lat: 11.8545, lng: 75.3904 }}
