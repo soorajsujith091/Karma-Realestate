@@ -243,6 +243,7 @@ img{display:block}
 }
 .hr-map { position: absolute; inset: 0; }
 .hr-map iframe, .hr-map-bg { width: 100%; height: 100%; object-fit: cover; border: none; }
+.hr-map img, .res-map img, .mini-map img { max-width: none !important; }
 .hr-controls {
   position: absolute; top: 24px; right: 24px;
   display: flex; flex-direction: column; gap: 8px;
