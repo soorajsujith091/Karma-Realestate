@@ -60,6 +60,7 @@ function CookieBanner() {
 function Header() {
   const { user, setUser, showAuthModal, setShowAuthModal } = useContext(AppDataContext);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showSellModal, setShowSellModal] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === '/';
@@ -99,6 +100,7 @@ function Header() {
             <Link to="/results" className="nav-link">Properties</Link>
             <Link to="/about" className="nav-link">About Us</Link>
             <Link to="/wishlist" className="nav-link">Wishlist</Link>
+            <button className="nav-link" onClick={() => setShowSellModal(true)} style={{ color: 'var(--blue)', background: 'var(--accent-soft)' }}>Sell Property</button>
             {user ? (
               <div className="user-dropdown-wrap" style={{ position: 'relative' }}>
                 <button className="hdr-user">
@@ -140,6 +142,7 @@ function Header() {
           <Link to="/results" className="pub-side-link" onClick={() => setShowMobileMenu(false)}>Properties</Link>
           <Link to="/about" className="pub-side-link" onClick={() => setShowMobileMenu(false)}>About Us</Link>
           <Link to="/wishlist" className="pub-side-link" onClick={() => setShowMobileMenu(false)}>Wishlist</Link>
+          <button className="pub-side-link" onClick={() => { setShowMobileMenu(false); setShowSellModal(true); }} style={{ color: 'var(--blue)', background: 'var(--accent-soft)' }}>Sell Property</button>
           {user ? (
             <div style={{ borderTop: '1px solid var(--line)', marginTop: 'auto', paddingTop: 24 }}>
               <div style={{ padding: '0 24px', fontSize: 13, color: 'var(--ink-2)', marginBottom: 8 }}>Signed in as</div>
@@ -157,6 +160,36 @@ function Header() {
       </div>
 
       {/* Auth Gate and other modals below */}
+      {showSellModal && (
+        <div className="overlay" style={{zIndex: 101}} onClick={(e) => e.target.className.includes('overlay') && setShowSellModal(false)}>
+          <div className="modal" style={{maxWidth: 400}}>
+            <div className="modal-hd">
+              <b>List Your Property</b>
+              <button className="modal-x" onClick={() => setShowSellModal(false)}>✕</button>
+            </div>
+            <div className="modal-bd" style={{textAlign: 'center'}}>
+              <div className="m-ic" style={{background: 'rgba(26, 77, 143, 0.1)', color: 'var(--blue)', margin: '0 auto 16px', width: 56, height: 56, borderRadius: '50%', display: 'grid', placeItems: 'center'}}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21h18M3 7v14M21 7v14M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M9 9h6M9 13h6M9 17h6"/></svg>
+              </div>
+              <h3 style={{fontSize: 20, fontWeight: 800, marginBottom: 8}}>Ready to sell or rent?</h3>
+              <p style={{color: 'var(--ink-2)', fontSize: 14.5, marginBottom: 24, lineHeight: 1.5}}>
+                Get your property listed on KARMA Real Estate and reach thousands of potential buyers and tenants. Contact our experts today!
+              </p>
+              <div style={{display: 'flex', flexDirection: 'column', gap: 12}}>
+                <a href="https://wa.me/919995797450?text=Hello%20KARMA%20Real%20Estate,%20I%20would%20like%20to%20list%20my%20property." target="_blank" rel="noreferrer" style={{background: '#25D366', color: '#fff', fontWeight: 600, padding: '12px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textDecoration: 'none', border: 'none', cursor: 'pointer', transition: 'filter 0.2s'}} onMouseOver={e => e.currentTarget.style.filter = 'brightness(0.95)'} onMouseOut={e => e.currentTarget.style.filter = 'none'}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 2.01a10 10 0 0 0-8.52 15.27L2 22l4.87-1.46a10 10 0 1 0 5.14-18.53zm0 18A8 8 0 0 1 7.2 18.9l-.35-.2-3.6 1.08 1.1-3.5-.2-.36A8 8 0 1 1 12.01 20zm4.27-5.83c-.23-.12-1.38-.68-1.59-.76-.22-.08-.38-.12-.54.12s-.6 .76-.74.92c-.14.16-.27.18-.5.06a6.56 6.56 0 0 1-1.92-1.18 7.2 7.2 0 0 1-1.33-1.66c-.14-.24-.01-.37.1-.49.1-.11.23-.27.35-.4a1.6 1.6 0 0 0 .15-.25c.08-.16.04-.3-.02-.42s-.54-1.3-.74-1.78c-.2-.47-.4-.4-.54-.41-.14 0-.3-.01-.46-.01a.89.89 0 0 0-.64.3c-.22.24-.85.83-.85 2.02s.87 2.34.99 2.5c.12.16 1.7 2.6 4.12 3.64 1.48.64 2.15.7 2.94.59.56-.08 1.38-.56 1.57-1.1.2-.54.2-.1.14-.11z"/></svg>
+                  Chat on WhatsApp
+                </a>
+                <a href="tel:+919995797450" style={{background: 'var(--blue)', color: '#fff', fontWeight: 600, padding: '12px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', textDecoration: 'none', border: 'none', cursor: 'pointer', transition: 'background 0.2s'}} onMouseOver={e => e.currentTarget.style.background = 'var(--blue-d)'} onMouseOut={e => e.currentTarget.style.background = 'var(--blue)'}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  Call +91 99957 97450
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showAuthModal && (
         <div className="overlay" onClick={() => setShowAuthModal(false)}>
           <div className="modal" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
