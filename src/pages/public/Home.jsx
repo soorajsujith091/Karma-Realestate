@@ -130,7 +130,7 @@ export default function Home() {
         </div>
         <div className="hero-right">
           <div className="hr-map">
-            <APIProvider apiKey="AIzaSyC36wkei0AmiJoLtIwpeVEeeOo4I-st6qQ">
+            <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyC36wkei0AmiJoLtIwpeVEeeOo4I-st6qQ"}>
               <Map
                 defaultZoom={11}
                 defaultCenter={{ lat: 11.874477, lng: 75.370182 }}
