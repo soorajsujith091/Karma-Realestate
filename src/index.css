@@ -15,21 +15,21 @@
   --popover-foreground: #000000;
   --border: #e5e7eb;
   --input: #e5e7eb;
-  --primary: #1a4d8f; 
+  --primary: #FF385C; 
   --primary-foreground: #ffffff;
-  --secondary: #f3f4f6;
-  --secondary-foreground: #111827;
+  --secondary: #f7f7f7;
+  --secondary-foreground: #222222;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --ring: #1a4d8f;
+  --ring: #FF385C;
 
-  --blue:#1A4D8F; --blue-d:#123A6E; --accent:#4A90E2; --accent-soft:#EAF2FC;
-  --bg:#FFFFFF; --bg-soft:#F7F9FC; --ink:#1C1C1C; --ink-2:#6B7280;
-  --line:#E5E8EC; --green:#2E9E5B; --red:#D64545; --amber:#B7791F;
-  --r:16px; --r-sm:12px;
-  --shadow-1:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.08);
-  --shadow-2:0 6px 16px rgba(16,24,40,.12);
-  --shadow-3:0 12px 32px rgba(16,24,40,.16);
+  --blue:#FF385C; --blue-d:#D90B3E; --accent:#E31C5F; --accent-soft:#FFF0F2;
+  --bg:#FFFFFF; --bg-soft:#F7F7F7; --ink:#222222; --ink-2:#717171;
+  --line:#DDDDDD; --green:#008A05; --red:#C13515; --amber:#B36B00;
+  --r:12px; --r-sm:8px;
+  --shadow-1:0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-2:0 6px 16px rgba(0,0,0,0.12);
+  --shadow-3:0 12px 32px rgba(0,0,0,0.16);
   
   /* Admin specific */
   --admin-blue: #0071E3;
@@ -1051,28 +1051,23 @@ select.pill-sel:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--accent
 /* Update normal marker color */
 .nq-marker {
   position: absolute;
-  background: #093b2a;
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
+  background: #ffffff;
+  color: #222222;
+  padding: 6px 14px;
+  border-radius: 24px;
   font-weight: 700;
-  font-size: 13px;
-  transform: translate(-50%, -100%);
+  font-size: 14px;
   pointer-events: auto;
+  transform: translate(-50%, -100%);
+  transition: transform 0.2s, background 0.2s, color 0.2s;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.15);
 }
 .nq-marker-caret {
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid #093b2a;
+  display: none;
 }
-.nq-marker:hover { transform: translate(-50%, -100%) scale(1.1); z-index: 10; background: #062b1e; }
-.nq-marker:hover .nq-marker-caret { border-top-color: #062b1e; }
+.nq-marker:hover, .nq-marker.active { transform: translate(-50%, -100%) scale(1.05); z-index: 10; background: #222222; color: #ffffff; }
+.nq-marker:hover .nq-marker-caret { display: none; }
 
 /* Active Marker (Red Pin + Popup) */
 .nq-marker-active-wrap {

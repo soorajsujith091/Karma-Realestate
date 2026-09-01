@@ -6,42 +6,24 @@ import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { Footer } from '../../components/public/PublicLayout';
 
 function PropertyCard({ p }) {
-  // Generate a mock rating between 4.5 and 5.0 for the UI
   const rating = (4.5 + Math.random() * 0.5).toFixed(1);
-
   return (
-    <Link to={`/kannur/${p.type.toLowerCase()}/${p.id}`} className="nq-card">
-      <div className="nq-media">
-        <img src={p.imgs?.[0] || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00'} alt={p.title} />
-        <div className="nq-rating">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="#FBBF24" stroke="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-          <span>{rating}</span>
-        </div>
-        <div className="nq-loc-tag">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          {p.loc}, Kannur
-        </div>
+    <Link to={`/kannur/${p.type.toLowerCase()}/${p.id}`} className="nq-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px', textDecoration: 'none', color: 'var(--ink)' }}>
+      <div className="nq-media" style={{ position: 'relative', aspectRatio: '1/1', borderRadius: '12px', overflow: 'hidden', background: 'var(--bg-soft)' }}>
+        <img src={p.imgs?.[0] || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00'} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <button style={{ position: 'absolute', top: 12, right: 12, background: 'transparent', color: 'rgba(0,0,0,0.5)', cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="rgba(0,0,0,0.5)" stroke="#fff" strokeWidth="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </button>
       </div>
-      <div className="nq-body">
-        <div className="nq-top">
-          <h3 className="nq-title">{p.title}</h3>
-          <div className="nq-price"><b>₹{p.price}L</b></div>
+      <div className="nq-body" style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontSize: '15px' }}>
+        <div style={{ fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <span>{p.loc}, Kannur</span>
+          <span style={{ fontWeight: 400, display: 'flex', alignItems: 'center', gap: '4px', fontSize: '14px' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> {rating}</span>
         </div>
-        <div className="nq-meta">
-          {p.beds && (
-            <span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"></path></svg>
-              {p.beds} Beds
-            </span>
-          )}
-          <span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v16H4z"/><path d="M4 14h16M14 4v16"/></svg>
-            {p.area || '1200'} sqft
-          </span>
-          <span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12h20M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8M4 12v-4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4M9 6v6M15 6v6"/></svg>
-            2 Bathrooms
-          </span>
+        <div style={{ color: 'var(--ink-2)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{p.type} · {[p.land || p.area, p.beds ? p.beds + ' BHK' : null].filter(Boolean).join(' · ')}</div>
+        <div style={{ color: 'var(--ink-2)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{p.title}</div>
+        <div style={{ marginTop: '4px' }}>
+          <span style={{ fontWeight: 600 }}>₹{p.price} L</span> <span style={{ color: 'var(--ink)' }}>{p.purpose === 'Rent' ? 'month' : 'total'}</span>
         </div>
       </div>
     </Link>

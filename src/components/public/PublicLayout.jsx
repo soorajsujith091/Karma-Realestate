@@ -89,42 +89,41 @@ function Header() {
 
   return (
     <>
-      <header className={`hdr ${scrolled ? 'hdr-solid' : 'hdr-transparent'}`}>
+      <header className={`hdr ${scrolled ? 'hdr-solid' : 'hdr-transparent'}`} style={{ borderBottom: '1px solid var(--line)' }}>
         <div className="hdr-in">
           <Link to="/" className="logo" style={{ textDecoration: 'none' }}>
-            <div className="logo-mark">K</div>
-            <div className="logo-txt"><b>KARMA</b><span>REAL ESTATE</span></div>
+            <div className="logo-mark" style={{ background: 'none', color: 'var(--primary)', boxShadow: 'none' }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+            </div>
+            <div className="logo-txt" style={{ color: 'var(--primary)', fontSize: '20px', letterSpacing: '-0.5px' }}><b style={{fontWeight: 800}}>karma</b></div>
           </Link>
-          <nav className="hdr-nav">
-            <Link to="/" className="nav-link">Home</Link>
-            <Link to="/results" className="nav-link">Properties</Link>
-            <Link to="/about" className="nav-link">About Us</Link>
-            <Link to="/wishlist" className="nav-link">Wishlist</Link>
-            <button className="nav-link" onClick={() => setShowSellModal(true)} style={{ color: 'var(--blue)', background: 'var(--accent-soft)' }}>Sell Property</button>
-            {user ? (
-              <div className="user-dropdown-wrap" style={{ position: 'relative' }}>
-                <button className="hdr-user">
-                  <span>{user.name.split(' ')[0]}</span>
-                  <span className="avatar" style={{background: 'var(--accent)', color: '#fff'}}>
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
-                </button>
-                <div className="user-dropdown">
-                  <button onClick={() => setUser(null)}>Log out</button>
-                </div>
+          
+          <div className="hdr-search-pill" style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid var(--line)', borderRadius: '40px', padding: '8px 8px 8px 24px', boxShadow: 'var(--shadow-1)', cursor: 'pointer', gap: '16px', fontWeight: 600, fontSize: '14px', transition: 'box-shadow 0.2s', margin: '0 auto' }} onMouseOver={e => e.currentTarget.style.boxShadow = 'var(--shadow-2)'} onMouseOut={e => e.currentTarget.style.boxShadow = 'var(--shadow-1)'}>
+            <Link to="/results" style={{ textDecoration: 'none', color: 'var(--ink)' }}>Anywhere</Link>
+            <div style={{ width: 1, height: 24, background: 'var(--line)' }}></div>
+            <Link to="/results" style={{ textDecoration: 'none', color: 'var(--ink)' }}>Any property</Link>
+            <div style={{ width: 1, height: 24, background: 'var(--line)' }}></div>
+            <Link to="/results" style={{ textDecoration: 'none', color: 'var(--ink-2)', fontWeight: 400 }}>Add budget</Link>
+            <Link to="/results" style={{ background: 'var(--primary)', color: '#fff', width: 32, height: 32, borderRadius: '50%', display: 'grid', placeItems: 'center', marginLeft: 8, textDecoration: 'none' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </Link>
+          </div>
+          
+          <div className="hdr-right" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button onClick={() => setShowSellModal(true)} style={{ fontWeight: 600, padding: '12px 16px', borderRadius: '24px', fontSize: '14px', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = 'var(--bg-soft)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>Karma your home</button>
+            <button style={{ padding: '12px', borderRadius: '50%', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = 'var(--bg-soft)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+            </button>
+            <div className="hdr-user-pill" style={{ display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid var(--line)', padding: '6px 6px 6px 14px', borderRadius: '30px', cursor: 'pointer', transition: 'box-shadow 0.2s', marginLeft: 8, background: '#fff' }} onClick={() => user ? setUser(null) : setShowAuthModal(true)} onMouseOver={e => e.currentTarget.style.boxShadow = 'var(--shadow-1)'} onMouseOut={e => e.currentTarget.style.boxShadow = 'none'}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              <div style={{ background: 'var(--ink-2)', color: '#fff', width: 30, height: 30, borderRadius: '50%', display: 'grid', placeItems: 'center' }}>
+                {user ? user.name.charAt(0).toUpperCase() : <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg>}
               </div>
-            ) : (
-              <button className="hdr-user" onClick={() => setShowAuthModal(true)}>
-                <span>Sign in</span>
-                <span className="avatar">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg>
-                </span>
-              </button>
-            )}
-            <button className="pub-menu-btn" onClick={() => setShowMobileMenu(true)}>
+            </div>
+            <button className="pub-menu-btn" onClick={() => setShowMobileMenu(true)} style={{ display: 'none' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
-          </nav>
+          </div>
         </div>
       </header>
 
@@ -314,24 +313,31 @@ function Header() {
 
 export function Footer() {
   return (
-    <footer className="footer">
-      <div className="footer-in">
-        <div className="f-brand">
-          <div className="logo"><div className="logo-mark">K</div><div className="logo-txt"><b style={{color:'#fff'}}>KARMA</b><span style={{color:'#8FA3C2'}}>REAL ESTATE</span></div></div>
-          <p>A Kannur-first property marketplace. Land, houses, flats, warehouses and commercial spaces — for sale, rent and lease.</p>
+    <footer className="footer" style={{ borderTop: '1px solid var(--line)', background: '#F7F7F7', padding: '24px', color: 'var(--ink)' }}>
+      <div className="f-bottom" style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', fontSize: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <span>© 2026 Karma, Inc.</span>
+          <span>·</span>
+          <Link to="/privacy-policy" style={{ color: 'var(--ink)', textDecoration: 'none' }} onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'} onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}>Privacy</Link>
+          <span>·</span>
+          <span style={{ cursor: 'pointer' }} onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'} onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}>Terms</span>
+          <span>·</span>
+          <Link to="/about" style={{ color: 'var(--ink)', textDecoration: 'none' }} onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'} onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}>Sitemap</Link>
+          <span>·</span>
+          <span style={{ cursor: 'pointer' }} onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'} onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}>Company details</span>
         </div>
-        <div><h4>Explore</h4><Link to="/results">All properties</Link><Link to="/results?purpose=Sale">Buy</Link><Link to="/results?purpose=Rent">Rent</Link><Link to="/wishlist">Wishlist</Link></div>
-        <div><h4>Company</h4><Link to="/about">About KARMA</Link><Link to="/privacy-policy">Privacy Policy</Link><Link to="/about">Contact</Link></div>
-        <div><h4>Contact Us</h4>
-          <a style={{ fontWeight: '600' }}>Primary Contact:<br/>Zeeshan Ali / Vijina Velikath</a>
-          <a href="tel:+919995797450" style={{ fontSize: '18px', fontWeight: '800', color: 'var(--blue)' }}>+91 99957 97450</a>
-          <a href="mailto:hello@karmarealestate.in">hello@karmarealestate.in</a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+            English (IN)
+          </div>
+          <div style={{ cursor: 'pointer' }}>₹ INR</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+            Support & resources
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m18 15-6-6-6 6"/></svg>
+          </div>
         </div>
       </div>
-      <div className="f-bottom"><div className="f-bottom-in">
-        <span>© 2026 KARMA Real Estate Pvt. Ltd. All rights reserved.</span>
-        <span><a style={{display:'inline',padding:'0 8px'}}>Privacy Policy</a>·<a style={{display:'inline',padding:'0 8px'}}>Terms</a>·<span style={{padding:'0 8px'}}>K-RERA details shown per listing where registered</span></span>
-      </div></div>
     </footer>
   )
 }
