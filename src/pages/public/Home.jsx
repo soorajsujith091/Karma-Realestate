@@ -175,29 +175,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section" id="featured">
-        <div className="sec-head">
-          <div><h2>Featured properties</h2><p>Hand-picked by our team this week</p></div>
-          <Link to="/results" className="sec-link" style={{ color: 'var(--blue)', fontWeight: 700, textDecoration: 'none' }}>View all →</Link>
-        </div>
-        <div className="card-row">
-          {props.filter(p => p.featured).slice(0, 4).map(p => (
-            <PropertyCard key={p.id} p={p} />
-          ))}
-        </div>
-      </section>
-
-      <section className="section" id="recent" style={{ paddingBottom: '72px' }}>
-        <div className="sec-head">
-          <div><h2>Recently added</h2><p>Fresh on the market in Kannur</p></div>
-        </div>
-        <div className="card-row">
-          {props.slice(0, 4).map(p => (
-            <PropertyCard key={p.id} p={p} />
-          ))}
-        </div>
-      </section>
-
       <section className="section" id="types" style={{ paddingBottom: '72px' }}>
         <div className="sec-head"><div><h2>Browse by type</h2><p>What are you looking for?</p></div></div>
         <div className="type-row">
@@ -233,6 +210,31 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      <section className="section" id="featured">
+        <div className="sec-head">
+          <div><h2>Featured properties</h2><p>Hand-picked by our team this week</p></div>
+          <Link to="/results" className="sec-link" style={{ color: 'var(--blue)', fontWeight: 700, textDecoration: 'none' }}>View all →</Link>
+        </div>
+        <div className="card-row">
+          {props.filter(p => p.featured).slice(0, 4).map(p => (
+            <PropertyCard key={p.id} p={p} />
+          ))}
+        </div>
+      </section>
+
+      <section className="section" id="recent" style={{ paddingBottom: '72px' }}>
+        <div className="sec-head">
+          <div><h2>Recently added</h2><p>Fresh on the market in Kannur</p></div>
+        </div>
+        <div className="card-row">
+          {props.slice(0, 4).map(p => (
+            <PropertyCard key={p.id} p={p} />
+          ))}
+        </div>
+      </section>
+
+
 
       <ClientsSectionDemo />
     </>
