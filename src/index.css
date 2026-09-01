@@ -1093,17 +1093,19 @@ select.pill-sel:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--accent
 }
 .nq-ref-popup {
   position: absolute;
-  bottom: 24px; left: 16px; 
+  bottom: 34px; left: 50%; 
+  transform: translateX(-50%);
   z-index: 50;
   pointer-events: auto;
 }
 .nq-ref-wedge {
   position: absolute;
-  bottom: -16px; left: -16px;
-  width: 48px; height: 32px;
-  background: #093b2a;
-  clip-path: polygon(100% 100%, 100% 0, 0 100%); 
-  z-index: -1;
+  bottom: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 16px; height: 8px;
+  background: #fff;
+  clip-path: polygon(50% 100%, 0 0, 100% 0); 
+  z-index: 10;
 }
 .nq-ref-card {
   background: #fff;
